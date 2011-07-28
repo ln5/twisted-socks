@@ -45,7 +45,7 @@ class SOCKSv4ClientProtocol(Protocol):
         status = ord(data[1])
         if status != 0x5a:
             self.transport.loseConnection()
-            raise SOCKSError(status, "request not granted: %d" % status)
+            raise SOCKSError((status, "request not granted: %d" % status))
         return True
 
     def isSuccess(self, data):
