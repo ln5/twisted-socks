@@ -41,7 +41,7 @@ class SOCKSv4ClientProtocol(Protocol):
             return False
         if ord(data[0]) != 0:
             self.transport.loseConnection()
-            raise SOCKSError(1, "bad data")
+            raise SOCKSError((1, "bad data"))
         status = ord(data[1])
         if status != 0x5a:
             self.transport.loseConnection()
