@@ -1,15 +1,22 @@
 twisted-socks -- Client SOCKS support in Twisted.
 
+
 Twisted[0] doesn't seem to have support for writing a SOCKS client.
 The SOCKS support is written for servers and is restricted to SOCKSv4.
 
 This package aims to add support for client TCP connections, with or
 without SSL/TLS, to go over a SOCKS proxy, version 4, 4a or 5.
 
-See the examples directory for an idea on how to use it.  You can
-start a SOCKSv4 proxy server in the foreground by issuing the command
+
+See the examples directory for an idea on how to use it.  You can run
+the http example like this:
+
+    cd examples; ln -s ../socksclient.py .
+    ./http.py http://google.com/
+
+You can start a SOCKSv4 proxy server in the foreground by issuing 
+
   twistd -n socks
-Might be good for testing.
 
 
 Thanks to lebek for the Twisted magic needed to hook this in.

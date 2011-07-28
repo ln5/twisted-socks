@@ -1,1 +1,4 @@
 # twisted-socks TODO in Emacs -*- org -*- mode format.
+
+- add SOCKSClientProtocol and subclass the specific protocols from it
+

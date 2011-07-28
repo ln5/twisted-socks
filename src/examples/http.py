@@ -2,7 +2,7 @@
 
 import sys
 from twisted.internet import reactor, endpoints
-from twsocks import SOCKSv4ClientProtocol, SOCKSWrapper
+from socksclient import SOCKSv4ClientProtocol, SOCKSWrapper
 from twisted.web import client
 
 def wrappercb(proxy):
