@@ -22,7 +22,8 @@ You can start a SOCKSv4 proxy server in the foreground by issuing
 Thanks to lebek for the Twisted magic needed to hook this in.
 
 This package is being maintained by linus@nordberg.se.  Its canonical
-pickup point is http://github.com/ln5/twisted-socks .
+pickup point is http://github.com/ln5/twisted-socks .  Its licensed
+under a BSD license, see LICENSE for details.
 
 
 [0] https://twistedmatrix.com/
