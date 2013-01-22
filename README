@@ -8,7 +8,7 @@ This package aims to add support for client TCP connections, with or
 without SSL/TLS, to go over a SOCKS proxy, version 4, 4a or 5.
 
 
-See the examples directory for an idea on how to use it.  You can run
+See the examples directory for an idea on how to use it. You can run
 the http example like this:
 
     cd examples; ln -s ../socksclient.py .
@@ -21,8 +21,8 @@ You can start a SOCKSv4 proxy server in the foreground by issuing
 
 Thanks to lebek for the Twisted magic needed to hook this in.
 
-This package is being maintained by linus@nordberg.se.  Its canonical
-pickup point is http://github.com/ln5/twisted-socks .  Its licensed
+This package is being maintained by linus@nordberg.se. Its canonical
+pickup point is http://github.com/ln5/twisted-socks . It's licensed
 under a BSD license, see LICENSE for details.
 
 

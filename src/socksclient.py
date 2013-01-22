@@ -18,7 +18,7 @@ class SOCKSError(Exception):
 class SOCKSv4ClientProtocol(Protocol):
     buf = ''
 
-    def	SOCKSConnect(self, host, port):
+    def SOCKSConnect(self, host, port):
         # only socksv4a for now
         ver = 4
         cmd = 1                 # stream connection
@@ -59,7 +59,7 @@ class SOCKSv4ClientProtocol(Protocol):
     def dataReceived(self, data):
         if self.isSuccess(data):
             # Build protocol from provided factory and transfer control to it.
-	    self.transport.protocol = self.postHandshakeFactory.buildProtocol(
+            self.transport.protocol = self.postHandshakeFactory.buildProtocol(
                 self.transport.getHost())
             self.transport.protocol.transport = self.transport
             self.transport.protocol.connectionMade()
@@ -85,7 +85,7 @@ class SOCKSWrapper(object):
         self._host = host
         self._port = port
         self._reactor = reactor
-	self._endpoint = endpoint
+        self._endpoint = endpoint
 
     def connect(self, protocolFactory):
         """
@@ -95,7 +95,7 @@ class SOCKSWrapper(object):
         def _canceller(deferred):
             connector.stopConnecting()
             deferred.errback(
-		error.ConnectingCancelledError(connector.getDestination()))
+                error.ConnectingCancelledError(connector.getDestination()))
 
         try:
             # Connect with an intermediate SOCKS factory/protocol,
@@ -108,5 +108,5 @@ class SOCKSWrapper(object):
             wf = _WrappingFactory(f, _canceller)
             self._reactor.connectTCP(self._host, self._port, wf)
             return f.handshakeDone
-        except: 
-            return defer.fail() 
+        except:
+            return defer.fail()
