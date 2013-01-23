@@ -1,6 +1,7 @@
 # Copyright (c) 2011-2012, Linus Nordberg
 # See LICENSE for details.
 
+import inspect
 import socket
 import struct
 from zope.interface import implements
@@ -92,10 +93,20 @@ class SOCKSWrapper(object):
         Return a deferred firing when the SOCKS connection is established.
         """
 
-        def _canceller(deferred):
-            connector.stopConnecting()
-            deferred.errback(
-                error.ConnectingCancelledError(connector.getDestination()))
+        def createWrappingFactory(f):
+            """
+            Wrap creation of _WrappingFactory since __init__() doesn't
+            take a canceller as of Twisted 12.1 or something.
+            """
+            if len(inspect.getargspec(_WrappingFactory.__init__)[0]) == 3:
+                def _canceller(deferred):
+                    connector.stopConnecting()
+                    deferred.errback(
+                        error.ConnectingCancelledError(
+                            connector.getDestination()))
+                return _WrappingFactory(f, _canceller)
+            else:                           # Twisted >= 12.1.
+                return _WrappingFactory(f)
 
         try:
             # Connect with an intermediate SOCKS factory/protocol,
@@ -105,7 +116,7 @@ class SOCKSWrapper(object):
             f.postHandshakeEndpoint = self._endpoint
             f.postHandshakeFactory = protocolFactory
             f.handshakeDone = defer.Deferred()
-            wf = _WrappingFactory(f, _canceller)
+            wf = createWrappingFactory(f)
             self._reactor.connectTCP(self._host, self._port, wf)
             return f.handshakeDone
         except:
