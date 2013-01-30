@@ -1,4 +1,5 @@
 # Copyright (c) 2011-2012, Linus Nordberg
+# Copyright (c) 2013, The Tor Project
 # See LICENSE for details.
 
 import inspect
@@ -6,7 +7,7 @@ import socket
 import struct
 from zope.interface import implements
 from twisted.internet import defer
-from twisted.internet.interfaces import IStreamClientEndpoint
+from twisted.internet.interfaces import IStreamClientEndpoint, IReactorTime
 from twisted.internet.protocol import Protocol, ClientFactory
 from twisted.internet.endpoints import _WrappingFactory
 
@@ -18,6 +19,10 @@ class SOCKSError(Exception):
 
 class SOCKSv4ClientProtocol(Protocol):
     buf = ''
+
+    def noteTime(self, event):
+        if self._timer:
+            self._times[event] = self._timer.seconds()
 
     def SOCKSConnect(self, host, port):
         # only socksv4a for now
@@ -32,6 +37,7 @@ class SOCKSv4ClientProtocol(Protocol):
             dnsname = '%s\x00' % host
         msg = struct.pack('!BBH', ver, cmd, port) + addr + user + dnsname
         self.transport.write(msg)
+        self.noteTime('REQUEST')
 
     def verifySocksReply(self, data):
         """
@@ -54,11 +60,14 @@ class SOCKSv4ClientProtocol(Protocol):
         return self.verifySocksReply(self.buf)
 
     def connectionMade(self):
+        self.noteTime('CONNECT')
+        self.noteTime('NEGOTIATE')
         self.SOCKSConnect(self.postHandshakeEndpoint._host,
                           self.postHandshakeEndpoint._port)
 
     def dataReceived(self, data):
         if self.isSuccess(data):
+            self.noteTime('RESPONSE')
             # Build protocol from provided factory and transfer control to it.
             self.transport.protocol = self.postHandshakeFactory.buildProtocol(
                 self.transport.getHost())
@@ -75,6 +84,8 @@ class SOCKSv4ClientFactory(ClientFactory):
         r.postHandshakeEndpoint = self.postHandshakeEndpoint
         r.postHandshakeFactory = self.postHandshakeFactory
         r.handshakeDone = self.handshakeDone
+        r._times = self._times
+        r._timer = self._timer
         return r
 
 
@@ -82,11 +93,20 @@ class SOCKSWrapper(object):
     implements(IStreamClientEndpoint)
     factory = SOCKSv4ClientFactory
 
-    def __init__(self, reactor, host, port, endpoint):
+    def __init__(self, reactor, host, port, endpoint, times=None):
         self._host = host
         self._port = port
         self._reactor = reactor
         self._endpoint = endpoint
+        self._times = None
+        self._timer = None
+        if times is not None:
+            self._times = times
+            self._timer = IReactorTime(reactor)
+
+    def noteTime(self, event):
+        if self._timer:
+            self._times[event] = self._timer.seconds()
 
     def connect(self, protocolFactory):
         """
@@ -108,6 +128,7 @@ class SOCKSWrapper(object):
             else:                           # Twisted >= 12.1.
                 return _WrappingFactory(f)
 
+        self.noteTime('START')
         try:
             # Connect with an intermediate SOCKS factory/protocol,
             # which then hands control to the provided protocolFactory
@@ -116,8 +137,11 @@ class SOCKSWrapper(object):
             f.postHandshakeEndpoint = self._endpoint
             f.postHandshakeFactory = protocolFactory
             f.handshakeDone = defer.Deferred()
+            f._times = self._times
+            f._timer = self._timer
             wf = createWrappingFactory(f)
             self._reactor.connectTCP(self._host, self._port, wf)
+            self.noteTime('SOCKET')
             return f.handshakeDone
         except:
             return defer.fail()
