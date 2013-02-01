@@ -22,7 +22,7 @@ class SOCKSv4ClientProtocol(Protocol):
 
     def noteTime(self, event):
         if self._timer:
-            self._times[event] = self._timer.seconds()
+            self._timestamps[event] = self._timer.seconds()
 
     def SOCKSConnect(self, host, port):
         # only socksv4a for now
@@ -84,7 +84,7 @@ class SOCKSv4ClientFactory(ClientFactory):
         r.postHandshakeEndpoint = self.postHandshakeEndpoint
         r.postHandshakeFactory = self.postHandshakeFactory
         r.handshakeDone = self.handshakeDone
-        r._times = self._times
+        r._timestamps = self._timestamps
         r._timer = self._timer
         return r
 
@@ -93,20 +93,20 @@ class SOCKSWrapper(object):
     implements(IStreamClientEndpoint)
     factory = SOCKSv4ClientFactory
 
-    def __init__(self, reactor, host, port, endpoint, times=None):
+    def __init__(self, reactor, host, port, endpoint, timestamps=None):
         self._host = host
         self._port = port
         self._reactor = reactor
         self._endpoint = endpoint
-        self._times = None
+        self._timestamps = None
         self._timer = None
-        if times is not None:
-            self._times = times
+        if timestamps is not None:
+            self._timestamps = timestamps
             self._timer = IReactorTime(reactor)
 
     def noteTime(self, event):
         if self._timer:
-            self._times[event] = self._timer.seconds()
+            self._timestamps[event] = self._timer.seconds()
 
     def connect(self, protocolFactory):
         """
@@ -137,7 +137,7 @@ class SOCKSWrapper(object):
             f.postHandshakeEndpoint = self._endpoint
             f.postHandshakeFactory = protocolFactory
             f.handshakeDone = defer.Deferred()
-            f._times = self._times
+            f._timestamps = self._timestamps
             f._timer = self._timer
             wf = createWrappingFactory(f)
             self._reactor.connectTCP(self._host, self._port, wf)
