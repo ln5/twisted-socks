@@ -41,18 +41,23 @@ class SOCKSv4ClientProtocol(Protocol):
 
     def verifySocksReply(self, data):
         """
-        Return True on success, False on need-more-data.
-        Raise SOCKSError on request rejected or failed.
+        Return True on success and False on need-more-data or error.
+        In the case of an error, the connection is closed and the
+        handshakeDone errback is invoked with a SOCKSError exception
+        before False is returned.
         """
         if len(data) < 8:
             return False
         if ord(data[0]) != 0:
             self.transport.loseConnection()
-            raise SOCKSError((1, "bad data"))
+            self.handshakeDone.errback(SOCKSError((1, "bad data")))
+            return False
         status = ord(data[1])
         if status != 0x5a:
             self.transport.loseConnection()
-            raise SOCKSError((status, "request not granted: %d" % status))
+            self.handshakeDone.errback(SOCKSError(
+                    (status, "request not granted: %d" % status)))
+            return False
         return True
 
     def isSuccess(self, data):
