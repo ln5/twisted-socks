@@ -32,7 +32,7 @@ def main():
     thing = mything()
 
     # Mandatory first argument is a URL to fetch over Tor (or whatever
-    # SOCKS proxy that run on localhost:9050).
+    # SOCKS proxy that is running on localhost:9050).
     url = sys.argv[1]
     proxy = (None, 'localhost', 9050, True, None, None)
 
@@ -44,7 +44,7 @@ def main():
     thing.npages += 1
 
     # Optional second argument is a URL to fetch over whatever SOCKS
-    # proxy that runs on localhost:1080 (possibly `twistd -n socks').
+    # proxy that is running on localhost:1080 (possibly `twistd -n socks').
     if len(sys.argv) > 2:
         url2 = sys.argv[2]
         proxy2 = (None, 'localhost', 1080, True, None, None)
