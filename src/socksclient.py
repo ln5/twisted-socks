@@ -1,6 +1,5 @@
-# Copyright (c) 2011-2012, Linus Nordberg
-# Copyright (c) 2013, The Tor Project
-# See LICENSE for details.
+# Copyright (c) 2011-2013, The Tor Project
+# See LICENSE for the license.
 
 import inspect
 import socket

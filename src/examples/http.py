@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
-# Copyright (c) 2011-2013, Linus Nordberg
-# See LICENSE for details.
+# Copyright (c) 2011-2013, The Tor Project
+# See LICENSE for the license.
 
 import sys
 from twisted.internet import reactor, endpoints
