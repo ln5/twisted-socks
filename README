@@ -29,4 +29,10 @@ pickup point is http://github.com/ln5/twisted-socks . It's licensed
 under a BSD license, see LICENSE for details.
 
 
+twisted-socks was written mid 2011. Since then txsocksx [1] has
+appeared. txsocks seems like a good alternative to twisted-socks. It
+looks clean, seems to have support for SOCKS5 and does have tests.
+
+
 [0] https://twistedmatrix.com/
+[1] https://github.com/habnabit/txsocksx/
