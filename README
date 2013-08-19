@@ -1,7 +1,7 @@
 twisted-socks -- Client SOCKS support in Twisted.
 
 
-Twisted[0] doesn't seem to have support for writing a SOCKS client.
+Twisted [0] doesn't seem to have support for writing a SOCKS client.
 The SOCKS support is written for servers and is restricted to SOCKSv4.
 
 This package aims to add support for client TCP connections, with or
