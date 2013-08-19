@@ -4,6 +4,7 @@
 # See LICENSE for the license.
 
 import sys
+from urlparse import urlparse
 from twisted.internet import reactor, endpoints
 from socksclient import SOCKSv4ClientProtocol, SOCKSWrapper
 from twisted.web import client
@@ -24,8 +25,9 @@ class mything:
             reactor.stop()
 
     def sockswrapper(self, proxy, url):
-        dest = client._parse(url) # scheme, host, port, path
-        endpoint = endpoints.TCP4ClientEndpoint(reactor, dest[1], dest[2])
+        dest = urlparse(url)
+        assert dest.port is not None, 'Must specify port number.'
+        endpoint = endpoints.TCP4ClientEndpoint(reactor, dest.hostname, dest.port)
         return SOCKSWrapper(reactor, proxy[1], proxy[2], endpoint, self.timestamps)
 
 def main():
